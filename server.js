@@ -30,7 +30,8 @@
 
   app.get('/', (req,res) => {
     res.render('index.ejs',{
-      title: "App"
+      title: "App",
+      user: req.session.user
     })
   });
 
