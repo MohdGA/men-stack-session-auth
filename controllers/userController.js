@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../model/user');
+const bcrypt = require('bcrypt')
 
 router.get('/sign-up',(req,res) => {
   // const allUsers = await User.create(req.body);
@@ -12,7 +13,7 @@ router.post('/sign-up', async (req,res) => {
 
  // get data form from req.body
  // check if someone already exists
- console.log(req.body);
+
  const userInDatabase = await User.findOne({username: req.body.username});
 
  if(userInDatabase){
@@ -24,6 +25,10 @@ router.post('/sign-up', async (req,res) => {
  };
  // check for passowrd complexity (LEVEL UP)
  // hash the password
+ const hashedPassword = bcrypt.hashSync(req.body.password,10);
+ req.body.password = hashedPassword;
+ console.log(hashedPassword); 
+ console.log(req.body);
  const newUser = await User.create(req.body);
   res.send(`Thanks for signing Up ${newUser.username}`);
 })
