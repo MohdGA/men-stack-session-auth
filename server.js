@@ -6,6 +6,8 @@
   const mongoose = require('mongoose');
   const morgan = require('morgan');
   const methodOverride = require('method-override');
+  const userController = require('./controllers/userController');
+  
 
   const port = process.env.PORT ? process.env.PORT : "3000"
 
@@ -25,6 +27,9 @@
     res.render('index.ejs',{
       title: "App"
     })
-  })
+  });
+
+  // ROUTES
+  app.use('/auth',userController);
 
   app.listen(port,console.log('server is connected!: ' + port));
