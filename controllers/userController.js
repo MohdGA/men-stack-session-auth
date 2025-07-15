@@ -14,23 +14,44 @@ router.post('/sign-up', async (req,res) => {
  // get data form from req.body
  // check if someone already exists
 
- const userInDatabase = await User.findOne({username: req.body.username});
+  const userInDatabase = await User.findOne({username: req.body.username});
 
- if(userInDatabase){
-  return res.send("Username already taken ):");
- };
- // check that password and confirm password are the same
- if(req.body.password !== req.body.confirmPassword){
-  return res.send('Passowrd and confirm password must match!');
- };
- // check for passowrd complexity (LEVEL UP)
- // hash the password
- const hashedPassword = bcrypt.hashSync(req.body.password,10);
- req.body.password = hashedPassword;
- console.log(hashedPassword); 
- console.log(req.body);
- const newUser = await User.create(req.body);
+  if(userInDatabase){
+    return res.send("Username already taken ):");
+  };
+  // check that password and confirm password are the same
+  if(req.body.password !== req.body.confirmPassword){
+    return res.send('Passowrd and confirm password must match!');
+  };
+  // check for passowrd complexity (LEVEL UP)
+  // hash the password
+  const hashedPassword = bcrypt.hashSync(req.body.password,10);
+  req.body.password = hashedPassword;
+
+  const newUser = await User.create(req.body);
   res.send(`Thanks for signing Up ${newUser.username}`);
+});
+
+router.get('/sign-in',(req,res) => {
+  res.render('auth/sign-in.ejs')
+});
+
+router.post('/sign-in', async (req,res) => {
+
+   const userInDatabase = await User.findOne({username: req.body.username});
+   console.log('username: ' + userInDatabase)
+  // if username in the daabase is not exist
+  if(!userInDatabase){
+    return res.send("Login failed, try again ):");
+  };
+  const validPassword = bcrypt.compareSync(req.body.password, userInDatabase.password);
+  if(!validPassword){
+    return res.send('Password failed. Please try again!');
+  };
+  req.session.user = {
+    username: userInDatabase.username,
+    _id: userInDatabase._id
+  }
 })
 
 module.exports = router;

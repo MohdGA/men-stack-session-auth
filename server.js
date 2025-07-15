@@ -7,6 +7,7 @@
   const morgan = require('morgan');
   const methodOverride = require('method-override');
   const userController = require('./controllers/userController');
+  const session = require('express-session');
   
 
   const port = process.env.PORT ? process.env.PORT : "3000"
@@ -20,8 +21,12 @@
   // MIDDLEWARE
   app.use(express.urlencoded({extended: false}));
   app.use(methodOverride('_method'));
-  app.use(morgan('dev'))
-
+  app.use(morgan('dev'));
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  }));
 
   app.get('/', (req,res) => {
     res.render('index.ejs',{
