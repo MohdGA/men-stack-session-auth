@@ -8,6 +8,7 @@
   const methodOverride = require('method-override');
   const userController = require('./controllers/userController');
   const session = require('express-session');
+  const MongoStore = require('connect-mongo');
   
 
   const port = process.env.PORT ? process.env.PORT : "3000"
@@ -26,13 +27,16 @@
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({
+      mognoUrl: process.env.MONGODB_URI
+    })
   }));
 
   app.get('/', (req,res) => {
     res.render('index.ejs',{
       title: "App",
       user: req.session.user
-    })
+    });
   });
 
   // ROUTES
