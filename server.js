@@ -10,6 +10,7 @@
   const session = require('express-session');
   const MongoStore = require('connect-mongo');
   const isSignedIn = require('./middleware/is-signed-in');
+  const passUserToView = require('./middleware/pass-user-to-view');
 
   const port = process.env.PORT ? process.env.PORT : "3000"
 
@@ -17,7 +18,9 @@
   mongoose.connect(process.env.MONGODB_URI);
   mongoose.connection.on('connected',() => {
     console.log(`connected to MongoDB: ${mongoose.connection.name}`);
-  })
+  });
+
+ 
 
   // MIDDLEWARE
   app.use(express.urlencoded({extended: false}));
@@ -31,11 +34,12 @@
       mongoUrl: process.env.MONGODB_URI
     })
   }));
+  
+  app.use(passUserToView);
 
   app.get('/', (req,res) => {
     res.render('index.ejs',{
-      title: "App",
-      user: req.session.user
+      title: "App"
     });
   });
 
