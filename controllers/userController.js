@@ -29,6 +29,16 @@ router.post('/sign-up', async (req,res) => {
   req.body.password = hashedPassword;
 
   const newUser = await User.create(req.body);
+
+  req.session.user = {
+    username: newUser.username,
+    _id: newUser._id
+  };
+
+  req.session.save(() => {
+    res.redirect('/')
+  });
+
   res.send(`Thanks for signing Up ${newUser.username}`);
 });
 
@@ -38,16 +48,20 @@ router.get('/sign-in',(req,res) => {
 
 router.post('/sign-in', async (req,res) => {
 
-   const userInDatabase = await User.findOne({username: req.body.username});
-   console.log('username: ' + userInDatabase)
-  // if username in the daabase is not exist
+  const userInDatabase = await User.findOne({username: req.body.username});
+  console.log('username: ' + userInDatabase);
+
+  // if username in the database is not exist
   if(!userInDatabase){
     return res.send("Login failed, try again ):");
   };
+
   const validPassword = bcrypt.compareSync(req.body.password, userInDatabase.password);
+
   if(!validPassword){
     return res.send('Password failed. Please try again!');
   };
+
   req.session.user = {
     username: userInDatabase.username,
     _id: userInDatabase._id

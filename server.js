@@ -9,7 +9,7 @@
   const userController = require('./controllers/userController');
   const session = require('express-session');
   const MongoStore = require('connect-mongo');
-  
+  const isSignedIn = require('./middleware/is-signed-in');
 
   const port = process.env.PORT ? process.env.PORT : "3000"
 
@@ -28,7 +28,7 @@
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-      mognoUrl: process.env.MONGODB_URI
+      mongoUrl: process.env.MONGODB_URI
     })
   }));
 
@@ -41,5 +41,9 @@
 
   // ROUTES
   app.use('/auth',userController);
+
+  app.get('/vip-lounge', isSignedIn,(req,res) => {
+    res.send(`Welcome ${req.session.user.username}`)
+  });
 
   app.listen(port,console.log('server is connected!: ' + port));
